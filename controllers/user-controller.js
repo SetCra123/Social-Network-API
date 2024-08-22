@@ -14,8 +14,10 @@ module.exports = {
     // Get a single user
     async getSingleUser(req, res) {
       try {
-        const user = await User.findOne({ _id: req.params.userId })
-          .select('-__v');
+        const user = await User.findOne({ _id: req.params.userID })
+          .select('-__v')
+          .populate('friends')
+          .populate('thoughts');
   
         if (!user) {
           return res.status(404).json({ message: 'No user with that ID' });
@@ -37,19 +39,44 @@ module.exports = {
     }
   },
   
-  // Delete a user and associated apps
-  async deleteUser(req, res) {
+  // Add a new friend to a user's friend list
+  async addFriend(req, res) {
     try {
-      const user = await User.findOneAndDelete({ _id: req.params.userId });
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userID },
+        { $addToSet: { friends: req.params.friendID } }, // Add to set ensures no duplicates
+        { new: true }
+      )
+      .populate('friends');
 
       if (!user) {
         return res.status(404).json({ message: 'No user with that ID' });
       }
 
-      await Application.deleteMany({ _id: { $in: user.applications } });
-      res.json({ message: 'User and associated apps deleted!' })
+      res.json(user);
     } catch (err) {
       res.status(500).json(err);
     }
   },
+
+  async removeFriend(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { friends: req.params.friendId } }, // Pull removes the friend from the array
+        { new: true }
+      ).populate('friends');
+
+      if (!user) {
+        return res.status(404).json({ message: 'No user with that ID' });
+      }
+
+      res.json(user);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+
+
 };
