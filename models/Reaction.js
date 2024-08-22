@@ -2,38 +2,44 @@ const { Schema, model } = require('mongoose');
 
 const reactionSchema = new Schema(
     {
-      thoughtText:  {
-        type: String,
-        required: true, 
-        unique: true,
-        minLength: 1,
-        maxLength: 280,
+      reactionId:  {
+        type: Schema.Types.ObjectId,
+        default: Schema.Types.ObjectId, //new object ID?
      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-        //getter method for timestamp on query? 
+      reactionBody: {
+        type: String,
+        required: true,
+        minLength: 1,
+        maxLength: 280, 
      },
       username: {
         type: String,
         required: true,
      },
-      reactions: [reactionSchema],
+      createdAt: {
+        type: Date,
+        default: Date.now,
+        //getter method to format timestamp
+     },
+      
     },
-    {
-        toJSON: {
-          virtuals: true,
-        },
-        id: false,
-      }
+    // {
+    //     toJSON: {
+    //       virtuals: true,
+    //     },
+    //     id: false,
+    //   }
     );
 
 
-reactionSchema.virtual('reactionCount').get(function () {
-    return this.reactions.length;
-    });
+// reactionSchema.virtual('reactionCount').get(function () {
+//     return this.reactions.length;
+//     });
       
-      // Initialize our thought model
+ 
+// be used as the `reaction` field's subdocument schema in the `Thought` model.
+
+// Initialize our thought model
     const Reaction = model('reaction', reactionSchema);
       
       module.exports = Reaction;
