@@ -4,7 +4,7 @@ const {
     getThoughts,
     getSingleThought,
     createThought,
-  } = require('../controllers/thought-controller');
+  } = require('../../controllers/thought-controller');
 
 
 // Thought routes

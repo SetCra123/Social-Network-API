@@ -1,7 +1,8 @@
 const express = require('express');
 const db = require('./config/connection');
-// Require model
+const routes = require('./routes');
 
+const cwd = process.cwd();
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -9,7 +10,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use('/api', routes);
+app.use(routes);
 
 db.once('open', () => {
     app.listen(PORT, () => {
